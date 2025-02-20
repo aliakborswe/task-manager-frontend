@@ -14,7 +14,6 @@ export const TaskProvider = ({ children }) => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const axiosPublic = useAxiosPublic();
-  console.log("from data", tasks);
 
 
 
@@ -61,7 +60,7 @@ export const TaskProvider = ({ children }) => {
     try {
       const res = await axiosPublic.post("tasks", {
         ...task,
-        uid: user.uid,
+        uid: user?.uid,
       });
       toast.success("Task added successfully");
       setTasks([...tasks, res.data]);
@@ -95,6 +94,7 @@ export const TaskProvider = ({ children }) => {
   const taskValue = {
     tasks,
     addTask,
+    setTasks,
     updateTask,
     deleteTask,
   };
