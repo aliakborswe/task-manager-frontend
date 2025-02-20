@@ -63,7 +63,7 @@ const Home = () => {
                           {...provided.dragHandleProps}
                           className='bg-white p-3 mb-2 rounded-lg shadow-lg'
                         >
-                          <TaskCard task={task} />
+                          <TaskCard task={task}  />
                         </div>
                       )}
                     </Draggable>

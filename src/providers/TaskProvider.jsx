@@ -5,6 +5,7 @@ import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
+import Swal from "sweetalert2";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const TaskContext = createContext();
@@ -82,14 +83,37 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-  const deleteTask = async (id) => {
-    try {
+const deleteTask = async (id) => {
+  try {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       await axiosPublic.delete(`tasks/${id}`);
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
+
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your task has been deleted.",
+        icon: "success",
+      });
     }
-  };
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete the task. Please try again.",
+      icon: "error",
+    });
+  }
+};
 
   const taskValue = {
     tasks,
