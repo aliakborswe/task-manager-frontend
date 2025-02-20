@@ -1,7 +1,9 @@
+import useAuth from "./hooks/useAuth";
 
 
 function App() {
-
+const {user, setUser, loading, setLoading, loginWithGoogle} = useAuth();
+console.log(user, setUser, loading, setLoading, loginWithGoogle);
 
   return (
     <>
