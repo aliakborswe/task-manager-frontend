@@ -4,48 +4,69 @@ import { FaDeleteLeft } from "react-icons/fa6";
 import { format } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import useTask from "../hooks/useTask";
+import Swal from "sweetalert2";
 const TaskCard = ({ task }) => {
-    const {deleteTask} = useTask();
+  const { deleteTask, updateTask } = useTask();
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
-    const [isOpen, setIsOpen] = useState(false);
-    const modalRef = useRef(null);
-      const [title, setTitle] = useState(task?.title || "");
-      const [description, setDescription] = useState(task?.description || "");
-      const [dueDate, setDueDate] = useState(
-        task?.dueDate ? task.dueDate.split("T")[0] : ""
-      );
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        const taskData = { title, description, dueDate };
+  const [isOpen, setIsOpen] = useState(false);
+  const modalRef = useRef(null);
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+  const [dueDate, setDueDate] = useState(
+    task?.dueDate ? task.dueDate.split("T")[0] : ""
+  );
 
-        console.log("from card", taskData);
+  // Function to update task
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const taskData = { title, description, dueDate };
 
-      };
+    // SweetAlert Confirmation
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to update this task?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, update it!",
+    });
 
-      const handleDelete = (id)=>{
-        deleteTask(id);
+    if (result.isConfirmed) {
+      await updateTask(task._id, taskData);
+
+      Swal.fire({
+        title: "Updated!",
+        text: "Your task has been updated successfully.",
+        icon: "success",
+      });
+
+      setIsOpen(false); // Close modal after updating
+    }
+  };
+  //   Function to delete task
+  const handleDelete = (id) => {
+    deleteTask(id);
+  };
+  // Function to close modal when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setIsOpen(false);
       }
-
-
-    // Function to close modal when clicking outside
-    useEffect(() => {
-      function handleClickOutside(event) {
-        if (modalRef.current && !modalRef.current.contains(event.target)) {
-          setIsOpen(false);
-        }
-      }
-      if (isOpen) {
-        document.addEventListener("mousedown", handleClickOutside);
-      }
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [isOpen]);
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <div
       className={`p-2 flex justify-between gap-2 rounded-lg shadow-md ${
-        isOverdue ? "border-red-500 border-2" : "bg-white dark:bg-gray-900"
+        isOverdue ? "border-red-300 border-2" : "bg-white dark:bg-gray-900"
       }`}
     >
       <div className='w-full'>
@@ -56,18 +77,24 @@ const TaskCard = ({ task }) => {
         {task.dueDate && (
           <p
             className={`text-sm ${
-              isOverdue ? "text-red-500 font-bold" : "text-gray-500"
+              isOverdue ? "text-red-400 font-bold" : "text-gray-500"
             }`}
           >
             Due: {format(new Date(task.dueDate), "PPP")}
           </p>
         )}
       </div>
-      <div className='flex flex-col items-center justify-between'>
-        <div onClick={() => setIsOpen(true)}>
+      <div className='flex flex-col items-center justify-between text-lg'>
+        <div
+          onClick={() => setIsOpen(true)}
+          className='cursor-pointer text-blue-500'
+        >
           <FaEdit />
         </div>
-        <div onClick={()=>handleDelete(task._id)}>
+        <div
+          onClick={() => handleDelete(task._id)}
+          className='cursor-pointer text-red-500'
+        >
           <FaDeleteLeft />
         </div>
       </div>
