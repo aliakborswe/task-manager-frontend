@@ -12,6 +12,7 @@ const MainLayout = () => {
     loginWithGoogle()
       .then((res) => {
         const user = {
+          uid: res?.user?.uid,
           name: res?.user?.displayName,
           email: res?.user?.email,
         };
