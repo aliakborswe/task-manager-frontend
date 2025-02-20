@@ -47,7 +47,7 @@ const Home = () => {
                 {...provided.droppableProps}
                 className='bg-gray-100 p-4 rounded-lg shadow-lg'
               >
-                <h2 className='text-xl font-bold mb-3'>{category}</h2>
+                <h2 className='text-xl font-bold mb-4 border-b-2 pb-1 border-dashed'>{category}</h2>
                 {tasks
                   .filter((task) => task.category === category)
                   .map((task, index) => (

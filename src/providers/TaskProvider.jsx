@@ -59,12 +59,11 @@ export const TaskProvider = ({ children }) => {
   // add task
   const addTask = async (task) => {
     try {
-      const res = await axiosPublic.post("tasks", {
+      await axiosPublic.post("tasks", {
         ...task,
         uid: user?.uid,
       });
       toast.success("Task added successfully");
-      setTasks([...tasks, res.data]);
     } catch (err) {
       toast.error(err.message);
     }
