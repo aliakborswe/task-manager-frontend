@@ -1,9 +1,12 @@
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import useTask from "../../hooks/useTask";
+import TaskCard from "../../components/TaskCard";
 
 
 const Home = () => {
   const { tasks, updateTask, setTasks } = useTask();
+
+
 
   const categories = ["To-Do", "In Progress", "Done"];
 
@@ -34,7 +37,7 @@ const Home = () => {
   };
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-4'>
+    <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 p-4'>
       <DragDropContext onDragEnd={handleDragEnd}>
         {categories.map((category) => (
           <Droppable key={category} droppableId={category}>
@@ -58,10 +61,9 @@ const Home = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className='bg-white p-3 mb-2 rounded shadow-md'
+                          className='bg-white p-3 mb-2 rounded-lg shadow-lg'
                         >
-                          <h3 className='font-bold'>{task.title}</h3>
-                          <p className='text-sm'>{task.description}</p>
+                          <TaskCard task={task} />
                         </div>
                       )}
                     </Draggable>
