@@ -1,41 +1,77 @@
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import useTask from "../../hooks/useTask";
 
-import useAuth from "../../hooks/useAuth";
-import { toast } from "react-toastify";
 
 const Home = () => {
-  const { user, loginWithGoogle, logout } = useAuth();
+  const { tasks, updateTask, setTasks } = useTask();
 
-  // handle google login
-  const handleGoogleLogin = () => {
-    loginWithGoogle()
-      .then((res) => {
-        console.log(res)
-        toast.success("Success to login");
-      })
-      .catch((err) => {
-        toast.error(err.message);
+  const categories = ["To-Do", "In Progress", "Done"];
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    // Reordering within the same category
+    if (source.droppableId === destination.droppableId) {
+      const updatedTasks = [...tasks];
+      const [movedTask] = updatedTasks.splice(source.index, 1);
+      updatedTasks.splice(destination.index, 0, movedTask);
+      setTasks(updatedTasks);
+    }
+    // Moving to a different category
+    else {
+      const updatedTasks = tasks.map((task) => {
+        if (task._id === result.draggableId) {
+          return { ...task, category: destination.droppableId };
+        }
+        return task;
       });
+
+      setTasks(updatedTasks);
+      updateTask(result.draggableId, { category: destination.droppableId });
+    }
   };
+
   return (
-    <div className='container mx-auto p-4'>
-      <h1 className='text-center text-3xl font-bold'>Task Manager</h1>
-      <div className='flex justify-center mt-6'>
-        {user ? (
-          <button
-            onClick={logout}
-            className='px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer'
-          >
-            Logout
-          </button>
-        ) : (
-          <button
-            onClick={handleGoogleLogin}
-            className='px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer'
-          >
-            Sign in with Google
-          </button>
-        )}
-      </div>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-4'>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        {categories.map((category) => (
+          <Droppable key={category} droppableId={category}>
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className='bg-gray-100 p-4 rounded-lg shadow-lg'
+              >
+                <h2 className='text-xl font-bold mb-3'>{category}</h2>
+                {tasks
+                  .filter((task) => task.category === category)
+                  .map((task, index) => (
+                    <Draggable
+                      key={task._id}
+                      draggableId={task._id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className='bg-white p-3 mb-2 rounded shadow-md'
+                        >
+                          <h3 className='font-bold'>{task.title}</h3>
+                          <p className='text-sm'>{task.description}</p>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        ))}
+      </DragDropContext>
     </div>
   );
 };

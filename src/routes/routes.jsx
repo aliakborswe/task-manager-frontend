@@ -1,24 +1,32 @@
 import { Route, Routes } from "react-router"
-import Dashboard from "../pages/dashboard/Dashboard"
 import Home from "../pages/Home/Home"
 import PrivetRoute from "./PrivetRoute"
 import ErrorPage from "../error-page"
+import AddTask from "../components/AddTask"
+import MainLayout from "../layout/MainLayout"
 
 
 const AllRoutes = ()=>{
     return (
       <Routes>
-        <Route path='/'>
-          <Route index element={<Home />} />
+        <Route path='/' element={<MainLayout />}>
           <Route
-            path='dashboard'
+            index
             element={
               <PrivetRoute>
-                <Dashboard />
+                <Home />
               </PrivetRoute>
             }
           />
-        <Route path='*' element={<ErrorPage />} />
+          <Route
+            path='add-task'
+            element={
+              <PrivetRoute>
+                <AddTask />
+              </PrivetRoute>
+            }
+          />
+          <Route path='*' element={<ErrorPage />} />
         </Route>
       </Routes>
     );
