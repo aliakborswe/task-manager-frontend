@@ -55,6 +55,7 @@ export const TaskProvider = ({ children }) => {
       socket.off("taskDeleted");
     };
   }, [user]);
+  
 
   // add task
   const addTask = async (task) => {

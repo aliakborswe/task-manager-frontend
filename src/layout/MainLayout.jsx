@@ -4,8 +4,11 @@ import useAxiosPublic from "../hooks/useAxiosPublic";
 import { toast } from "react-toastify";
 import { useEffect, useRef, useState } from "react";
 import useTask from "../hooks/useTask";
+import { useTheme } from "../providers/ThemeProvider";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const MainLayout = () => {
+  const { theme, setTheme } = useTheme();
   const { user, loginWithGoogle, logout } = useAuth();
   const axiosPublic = useAxiosPublic();
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +22,15 @@ const MainLayout = () => {
     description: "",
     dueDate: "",
   });
+
+  // handle theme
+  const handleTheme = () => {
+    if (theme === "light") {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  };
 
   // handle google login
   const handleGoogleLogin = () => {
@@ -49,7 +61,7 @@ const MainLayout = () => {
     try {
       await addTask(task);
       setTask({ title: "", description: "", dueDate: "" });
-      setIsOpen(false); 
+      setIsOpen(false);
       navigate("/");
     } catch (err) {
       toast.error(err.message);
@@ -72,21 +84,31 @@ const MainLayout = () => {
   }, [isOpen]);
 
   return (
-    <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8'>
-      <header className='flex justify-between items-center mx-4 px-4 rounded-lg py-4 bg-blue-100'>
-        <h1 className='text-center text-3xl font-bold'>My To-Do</h1>
-        <div className='flex justify-center items-center'>
+    <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8 bg-white dark:bg-gray-900'>
+      <header className='flex flex-col gap-4 sm:flex-row justify-between items-center mx-4 px-4 rounded-lg py-4 bg-gray-200 dark:bg-gray-800 dark:text-white'>
+        <div className='flex justify-between items-center w-full'>
+          <h1 className='text-center text-3xl font-bold'>My To-Do</h1>
+          <div>
+            <button
+              onClick={handleTheme}
+              className='flex justify-center items-center text-2xl'
+            >
+              {theme === "light" ? <FaSun /> : <FaMoon />}
+            </button>
+          </div>
+        </div>
+        <nav className='flex justify-center items-center w-[300px]'>
           {user ? (
             <div className='flex gap-4'>
               <div
                 onClick={() => setIsOpen(true)}
-                className='bg-blue-600 text-white px-4 py-2.5 rounded-md cursor-pointer'
+                className='bg-blue-600 text-white px-4 py-1 rounded-md cursor-pointer'
               >
                 Add Task
               </div>
               <button
                 onClick={logout}
-                className='px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer'
+                className='px-4 py-1 bg-red-500 text-white rounded-lg cursor-pointer'
               >
                 Logout
               </button>
@@ -101,16 +123,16 @@ const MainLayout = () => {
               </button>
             </div>
           )}
-        </div>
+        </nav>
       </header>
       <main>
         <Outlet />
         {/* Modal */}
         {isOpen && (
-          <div className='fixed inset-0 flex justify-center items-center bg-gray-900/40 '>
+          <div className='fixed inset-0 flex justify-center items-center bg-gray-900/60'>
             <div
               ref={modalRef}
-              className='p-6 bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-lg w-full'
+              className='p-6 bg-white dark:bg-gray-600 dark:text-white rounded-lg shadow-lg w-[300px] sm:w-[400px] md:w-[500px]'
             >
               <h2 className='text-xl font-bold mb-4'>Add New Task</h2>
               <form onSubmit={handleSubmit}>
@@ -158,7 +180,15 @@ const MainLayout = () => {
           </div>
         )}
       </main>
-      <footer className='text-center py-4 bg-gray-100'>This is footer</footer>
+
+      <footer className='bg-gray-200 rounded-lg shadow-lg m-4 dark:bg-gray-800'>
+        <div className='p-3 text-center'>
+          <span className='text-sm text-gray-500 sm:text-center dark:text-gray-400'>
+            © 2023{" "}
+            Task Manager. All Rights Reserved.
+          </span>
+        </div>
+      </footer>
     </div>
   );
 };
