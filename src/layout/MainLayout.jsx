@@ -84,8 +84,8 @@ const MainLayout = () => {
   }, [isOpen]);
 
   return (
-    <div className='bg-white dark:bg-gray-900 h-full'>
-      <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8'>
+    <div className='bg-white dark:bg-gray-900 h-full w-full'>
+      <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8 h-screen'>
         <header className='flex flex-col gap-4 sm:flex-row justify-between items-center mx-4 px-4 rounded-lg py-4 bg-gray-200 dark:bg-gray-800 dark:text-white'>
           <div className='flex justify-between items-center w-full'>
             <Link to="/" className="flex items-center gap-1">
