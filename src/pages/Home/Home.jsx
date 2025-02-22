@@ -1,58 +1,120 @@
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import useTask from "../../hooks/useTask";
 import TaskCard from "../../components/TaskCard";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 
 const Home = () => {
-  const { tasks, updateTask, setTasks } = useTask();
-
+  const { tasks, setTasks } = useTask();
+  const axiosPublic = useAxiosPublic()
 
   const categories = ["To-Do", "In Progress", "Done"];
-
-
-const handleDragEnd = (result) => {
+const handleDragEnd = async (result) => {
   if (!result.destination) return;
 
-  const { source, destination } = result;
+  const fromStatus = result.source.droppableId;
+  const toStatus = result.destination.droppableId;
+  const taskId = result.draggableId;
+  const oldIndex = result.source.index;
+  const newIndex = result.destination.index;
 
-  // Clone tasks to avoid mutating state directly
-  const updatedTasks = Array.from(tasks);
+  // Clone tasks to avoid direct mutation
+  let updatedTasks = tasks.map((task) => ({ ...task }));
 
-  // Reordering within the same category
-  if (source.droppableId === destination.droppableId) {
-    const filteredTasks = updatedTasks.filter(
-      (task) => task.category === source.droppableId
+  if (fromStatus === toStatus) {
+    // Find the moved task
+    const movedTask = updatedTasks.find((task) => task._id === taskId);
+
+    // Remove from old position
+    updatedTasks.splice(oldIndex, 1);
+
+    // Insert at new position
+    updatedTasks.splice(newIndex, 0, movedTask);
+
+    setTasks(updatedTasks); // Correctly update state
+  } else {
+    updatedTasks = updatedTasks.map((task) =>
+      task._id === taskId ? { ...task, category: toStatus } : task
     );
-    const [movedTask] = filteredTasks.splice(source.index, 1);
-    filteredTasks.splice(destination.index, 0, movedTask);
 
-    // Reintegrate reordered tasks into the full list
-    const finalTasks = updatedTasks.map((task) =>
-      task.category === source.droppableId
-        ? filteredTasks.find((t) => t._id === task._id) || task
-        : task
-    );
-
-    setTasks(finalTasks);
+    setTasks(updatedTasks);
   }
-  // Moving to a different category
-  else {
-    const updatedTaskIndex = updatedTasks.findIndex(
-      (task) => task._id === result.draggableId
-    );
 
-    if (updatedTaskIndex !== -1) {
-      updatedTasks[updatedTaskIndex] = {
-        ...updatedTasks[updatedTaskIndex],
-        category: destination.droppableId,
-      };
-      setTasks(updatedTasks);
-
-      // Persist category change in the backend
-      updateTask(result.draggableId, { category: destination.droppableId });
-    }
-  }
+  // Persist in database
+  await axiosPublic.put("/tasks/reorder", {
+    taskId,
+    newCategory: toStatus,
+    oldCategory: fromStatus,
+    newIndex,
+    oldIndex,
+  });
 };
+
+
+// const handleDragEnd = (result) => {
+//   if (!result.destination) return;
+
+//   const fromStatus = result.source.droppableId;
+//   const toStatus = result.destination.droppableId;
+//   const taskId = result.draggableId;
+//   console.log(fromStatus, toStatus, taskId);
+
+//   const oldIndex = result.source.index;
+
+//   if(fromStatus === toStatus) {
+//   const movedTask = tasks.find((task) => task._id === result.draggableId);
+
+//   const newTasks = [...tasks];
+
+//   // Remove the task from the source position
+//   newTasks.splice(result.source.index, 1);
+
+//   // Insert it into the new position
+//   newTasks.splice(result.destination.index, 0, movedTask);
+//   const currentTaskIndex = newTasks.findIndex(
+//     (task) => task._id === result.draggableId
+//   );
+//   console.log(currentTaskIndex, oldIndex);
+
+//   setTasks([...newTasks]); // Optimistic update for better UX
+//   axiosPublic.put("/tasks/reorder", {
+//     taskId,
+//     newCategory: toStatus,
+//     oldCategory: fromStatus,
+//     newIndex: currentTaskIndex,
+//     oldIndex,
+//   });
+//   }else{
+//     const updatedTaskIndex = tasks.findIndex(
+//       (task) => task._id === result.draggableId
+//     );
+
+//     if (updatedTaskIndex !== -1) {
+//       const updatedTask = {
+//         ...tasks[updatedTaskIndex],
+//         category: toStatus,
+//       };
+
+//       const newTasks = [...tasks];
+//       newTasks[updatedTaskIndex] = updatedTask;
+//       const currentTaskIndex = newTasks.findIndex(
+//         (task) => task._id === result.draggableId
+//       );
+//       console.log(currentTaskIndex, oldIndex);
+
+//       setTasks(newTasks); // Optimistic update for better UX
+//       axiosPublic.put("/tasks/reorder", {
+//         taskId,
+//         newCategory: toStatus,
+//         oldCategory: fromStatus,
+//         newIndex: currentTaskIndex,
+//         oldIndex,
+//       });
+      
+//     }
+//   }
+
+// };
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 p-4'>
