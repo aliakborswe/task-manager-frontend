@@ -84,8 +84,8 @@ const MainLayout = () => {
   }, [isOpen]);
 
   return (
-    <div className='bg-white dark:bg-gray-900 h-full w-full'>
-      <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8 h-screen'>
+    <div className='bg-white dark:bg-gray-900'>
+      <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8'>
         <header className='flex flex-col gap-4 sm:flex-row justify-between items-center mx-4 px-4 rounded-lg py-4 bg-gray-200 dark:bg-gray-800 dark:text-white'>
           <div className='flex justify-between items-center w-full'>
             <Link to="/" className="flex items-center gap-1">
@@ -101,7 +101,7 @@ const MainLayout = () => {
               </button>
             </div>
           </div>
-          <nav className='flex justify-center items-center w-[300px]'>
+          <nav className='flex justify-center items-center'>
             {user ? (
               <div className='flex gap-4'>
                 <div
@@ -130,7 +130,7 @@ const MainLayout = () => {
             )}
           </nav>
         </header>
-        <main>
+        <main className="h-screen">
           <Outlet />
           {/* Modal */}
           {isOpen && (
