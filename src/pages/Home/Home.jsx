@@ -129,7 +129,13 @@ const Home = () => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className='bg-gray-200 dark:bg-gray-600 dark:text-white p-4 rounded-lg shadow-lg'
+                className={`bg-gray-200 dark:bg-gray-600 dark:text-white p-4 rounded-lg shadow-lg  ${
+                  category === "In Progress"
+                    ? "text-blue-600 dark:text-blue-500"
+                    : category === "Done"
+                    ? "text-green-600 dark:text-green-500"
+                    : " "
+                }`}
               >
                 <h2 className='text-xl font-bold mb-4 border-b-2 pb-1 border-dashed'>
                   {category}
