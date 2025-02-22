@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const TaskContext = createContext();
-const socket = io("http://localhost:8000");
+const socket = io("https://task-manager-backend-seven-pied.vercel.app");
 
 export const TaskProvider = ({ children }) => {
   const { user } = useAuth();
