@@ -66,14 +66,20 @@ const TaskCard = ({ task }) => {
   return (
     <div className='p-2 flex justify-between gap-2'>
       <div className='w-full space-y-1 text-base'>
-        <h3 className='font-bold text-gray-900 dark:text-white'>{task.title}</h3>
+        <h3 className='font-bold text-gray-900 dark:text-white'>
+          {task.title}
+        </h3>
         {task.description && (
-          <p className='text-sm text-gray-700 dark:text-gray-400'>{task.description}</p>
+          <p className='text-sm text-gray-700 dark:text-gray-400'>
+            {task.description}
+          </p>
         )}
         {task.dueDate && (
           <p
             className={`text-sm ${
-              isOverdue ? "text-red-400 font-bold" : "text-gray-500 dark:text-gray-300"
+              isOverdue
+                ? "text-red-400 font-bold"
+                : "text-gray-500 dark:text-gray-300"
             }`}
           >
             Due: {format(new Date(task.dueDate), "PPP")}
@@ -134,9 +140,9 @@ const TaskCard = ({ task }) => {
 
               <button
                 type='submit'
-                className='mt-4 w-full p-2 bg-purple-500 text-white rounded-md'
+                className='mt-4 w-full p-2 bg-purple-500 text-white rounded-md cursor-pointer'
               >
-                {task ? "Update Task" : "Add Task"}
+                Update Task
               </button>
             </form>
           </div>

@@ -9,22 +9,26 @@ import Swal from "sweetalert2";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const TaskContext = createContext();
-const socket = io("https://task-manager-backend-seven-pied.vercel.app");
+const socket = io("https://task-manager-backend-seven-pied.vercel.app", {
+  transports: ["websocket", "polling"], // Fixes CORS issues
+  withCredentials: true, // Ensures cross-origin authentication
+  reconnection: true, // Enables automatic reconnection
+  reconnectionAttempts: 5, // Try to reconnect 5 times
+  reconnectionDelay: 2000, // Wait 2 seconds between attempts
+});
 
 export const TaskProvider = ({ children }) => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const axiosPublic = useAxiosPublic();
 
-
-
   // Fetch tasks from backend
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.email) return;
 
     const fetchTasks = async () => {
       try {
-        const res = await axiosPublic.get(`/tasks/${user?.uid}`);
+        const res = await axiosPublic.get(`/tasks/${user?.email}`);
         setTasks(res.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -55,7 +59,6 @@ export const TaskProvider = ({ children }) => {
       socket.off("taskDeleted");
     };
   }, [user]);
-  
 
   // add task
   const addTask = async (task) => {
@@ -63,6 +66,7 @@ export const TaskProvider = ({ children }) => {
       await axiosPublic.post("tasks", {
         ...task,
         uid: user?.uid,
+        email: user?.email,
       });
       toast.success("Task added successfully");
     } catch (err) {
@@ -83,37 +87,37 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-const deleteTask = async (id) => {
-  try {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
+  const deleteTask = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
 
-    if (result.isConfirmed) {
-      await axiosPublic.delete(`tasks/${id}`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+      if (result.isConfirmed) {
+        await axiosPublic.delete(`tasks/${id}`);
+        setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
 
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your task has been deleted.",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
       Swal.fire({
-        title: "Deleted!",
-        text: "Your task has been deleted.",
-        icon: "success",
+        title: "Error!",
+        text: "Failed to delete the task. Please try again.",
+        icon: "error",
       });
     }
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    Swal.fire({
-      title: "Error!",
-      text: "Failed to delete the task. Please try again.",
-      icon: "error",
-    });
-  }
-};
+  };
 
   const taskValue = {
     tasks,

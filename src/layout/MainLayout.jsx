@@ -84,12 +84,12 @@ const MainLayout = () => {
   }, [isOpen]);
 
   return (
-    <div className='bg-white dark:bg-gray-900'>
+    <div className='bg-white dark:bg-gray-900 max-h-full min-h-screen'>
       <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8'>
         <header className='flex flex-col gap-4 sm:flex-row justify-between items-center mx-4 px-4 rounded-lg py-4 bg-gray-200 dark:bg-gray-800 dark:text-white'>
           <div className='flex justify-between items-center w-full'>
-            <Link to="/" className="flex items-center gap-1">
-              <img src="/logo.svg" alt="logo" className="w-8" />
+            <Link to='/' className='flex items-center gap-1'>
+              <img src='/logo.svg' alt='logo' className='w-8' />
               <h1 className='text-center text-3xl font-bold'>todos</h1>
             </Link>
             <div>
@@ -130,7 +130,7 @@ const MainLayout = () => {
             )}
           </nav>
         </header>
-        <main className="h-screen">
+        <main className=''>
           <Outlet />
           {/* Modal */}
           {isOpen && (
@@ -176,7 +176,7 @@ const MainLayout = () => {
 
                   <button
                     type='submit'
-                    className='mt-4 w-full p-2 bg-purple-500 text-white rounded-md'
+                    className='mt-4 w-full p-2 bg-purple-500 text-white rounded-md cursor-pointer'
                   >
                     Add Task
                   </button>
