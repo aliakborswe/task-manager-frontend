@@ -1,11 +1,11 @@
-import { Outlet, useNavigate } from "react-router";
+import { Link, Outlet, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { toast } from "react-toastify";
 import { useEffect, useRef, useState } from "react";
 import useTask from "../hooks/useTask";
 import { useTheme } from "../providers/ThemeProvider";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaGoogle, FaMoon, FaSun } from "react-icons/fa";
 
 const MainLayout = () => {
   const { theme, setTheme } = useTheme();
@@ -84,15 +84,18 @@ const MainLayout = () => {
   }, [isOpen]);
 
   return (
-    <div className='bg-white dark:bg-gray-900 h-screen'>
+    <div className='bg-white dark:bg-gray-900 h-full'>
       <div className='container mx-auto px-2.5 py-4 md:py-8 lg:py-12 lg:px-8'>
         <header className='flex flex-col gap-4 sm:flex-row justify-between items-center mx-4 px-4 rounded-lg py-4 bg-gray-200 dark:bg-gray-800 dark:text-white'>
           <div className='flex justify-between items-center w-full'>
-            <h1 className='text-center text-3xl font-bold'>My To-Do</h1>
+            <Link to="/" className="flex items-center gap-1">
+              <img src="/logo.svg" alt="logo" className="w-8" />
+              <h1 className='text-center text-3xl font-bold'>todos</h1>
+            </Link>
             <div>
               <button
                 onClick={handleTheme}
-                className='flex justify-center items-center text-2xl'
+                className='flex justify-center items-center text-2xl cursor-pointer'
               >
                 {theme === "light" ? <FaSun /> : <FaMoon />}
               </button>
@@ -103,7 +106,7 @@ const MainLayout = () => {
               <div className='flex gap-4'>
                 <div
                   onClick={() => setIsOpen(true)}
-                  className='bg-blue-600 text-white px-4 py-1 rounded-md cursor-pointer'
+                  className='bg-blue-600 text-white text-center py-1 rounded-md cursor-pointer w-24'
                 >
                   Add Task
                 </div>
@@ -118,9 +121,10 @@ const MainLayout = () => {
               <div>
                 <button
                   onClick={handleGoogleLogin}
-                  className='px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer'
+                  className='px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer flex items-center gap-2'
                 >
-                  Sign in with Google
+                  <FaGoogle />
+                  Login
                 </button>
               </div>
             )}
